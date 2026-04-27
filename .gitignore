@@ -1,0 +1,7 @@
+# Build outputs
+*_bin
+*.dSYM
+
+# Editor and OS files
+.DS_Store
+*~
