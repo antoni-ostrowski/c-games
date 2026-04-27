@@ -1,6 +1,6 @@
 # C-Games
 
-A collection of simple games built in C using [raylib](https://www.raylib.com/).
+A collection of simple games built in C using [raylib](https://www.raylib.com/). I'm trying out making simple games while learning C :)
 
 ## Games
 
@@ -44,6 +44,5 @@ make clean  # Remove binaries
 
 ## Requirements
 
-- C compiler (cc)
+- C compiler
 - raylib library
-

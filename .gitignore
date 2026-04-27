@@ -5,3 +5,6 @@
 # Editor and OS files
 .DS_Store
 *~
+
+breakout_bin
+points_bin
