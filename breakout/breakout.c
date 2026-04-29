@@ -18,30 +18,30 @@ typedef struct {
 } Block;
 
 int main() {
-  printf("Hello World!\n");
-
-  size_t screenWidth = 1920;
-  size_t screenHeight = 1080;
+  size_t screenWidth = 1500;
+  size_t screenHeight = 1100;
 
   InitWindow(screenWidth, screenHeight, "breakout");
   SetTargetFPS(60);
 
-  size_t block_count = 60;
-  size_t block_width = 40;
-  size_t block_height = 30;
-  size_t curr_y_offset = 0;
-  size_t curr_x_offset = 0;
+  // we use simple array, but treat it
+  // in terms of rows and cols
+  size_t cols = 30;
+  size_t rows = 10;
+  size_t block_count = cols * rows;
+  size_t block_width = 60;
+  size_t block_height = 20;
+
   Block *blocks = malloc(block_count * sizeof(Block));
+
   for (size_t i = 0; i < block_count; i++) {
-    if (curr_x_offset > screenWidth - 100) {
-      curr_x_offset = 0;
-      curr_y_offset += block_height + 10;
-    } else {
-      curr_x_offset += block_width + 10;
-    }
+    // remainder from div gives what col we are in
+    size_t col = i % cols;
+    // skipping remainder gives what row we are in
+    size_t row = i / cols;
     Block a = {
-        .rect = {.x = curr_x_offset,
-                 .y = curr_y_offset,
+        .rect = {.x = col * (block_width + 10),
+                 .y = row * (block_height + 10),
                  .width = block_width,
                  .height = block_height},
         .active = true,
@@ -50,32 +50,49 @@ int main() {
     blocks[i] = a;
   }
 
+  size_t player_width = 250;
+  size_t player_height = 20;
   Rectangle player = {.x = (float)screenWidth / 2,
                       .y = (float)screenHeight - 40,
-                      .height = 20,
-                      .width = 250};
+                      .height = player_height,
+                      .width = player_width};
 
   float speed = 30;
 
-  Vector2 ball = {.x = (float)screenWidth / 2,
-                  .y = (float)screenHeight / 2 - 100};
+  Vector2 ball = {.x = (float)screenWidth / 2, .y = (float)screenHeight - 150};
   int ball_radius = 30;
-  float ball_speed_x = 500;
-  float ball_speed_y = 500;
+  float ball_speed_x = 580;
+  float ball_speed_y = 580;
 
   while (!WindowShouldClose()) {
+    float prev_player_x = player.x;
+    float prev_ball_x = ball.x;
     float dt = GetFrameTime();
     ball.x += ball_speed_x * dt;
     ball.y += ball_speed_y * dt;
 
-    if (IsKeyDown(KEY_RIGHT))
+    bool player_is_moving_right = IsKeyDown(KEY_RIGHT);
+    bool player_is_moving_left = IsKeyDown(KEY_LEFT);
+
+    if (player_is_moving_right)
       player.x += speed;
 
-    if (IsKeyDown(KEY_LEFT))
+    if (player_is_moving_left)
       player.x -= speed;
+
+    float player_vel_x = player.x - prev_player_x;
+    float ball_vel_x = ball.x - prev_ball_x;
 
     if (CheckCollisionCircleRec(ball, ball_radius, player)) {
       ball_speed_y *= -1;
+      ball.y = player.y - ball_radius;
+      if (player_vel_x < 0 && ball_vel_x > 0) {
+        ball_speed_x *= -1;
+      }
+
+      if (player_vel_x > 0 && ball_vel_x < 0) {
+        ball_speed_x *= -1;
+      }
     }
 
     bool ball_is_touching_botton = ball.y + ball_radius > screenHeight;
@@ -125,6 +142,7 @@ int main() {
     EndDrawing();
   }
 
+  free(blocks);
   CloseWindow();
 
   return 0;

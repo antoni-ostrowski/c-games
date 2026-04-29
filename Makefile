@@ -8,7 +8,7 @@ points: ./points/points.c
 .PHONY: breakout points clean
 
 breakout: ./breakout/breakout.c
-	cc $(CFLAGS) $(LDFLAGS) ./breakout/breakout.c -o breakout_bin -fsanitize=address -g
+	cc $(CFLAGS) $(LDFLAGS) ./breakout/breakout.c -o breakout_bin 
 
 clean:
 	rm -f breakout_bin points_bin 
